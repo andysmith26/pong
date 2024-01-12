@@ -107,6 +107,7 @@ class Game {
     this.player1.move(87, 83); // W and S keys
     this.player2.move(UP_ARROW, DOWN_ARROW);
     if (this.state === 'play') {
+      this.checkForScore();
       if (this.ball.collidesWithPaddle(this.player1)) {
         this.ball.dx *= -1.03;
         this.ball.x = this.player1.x + this.ball.size;
@@ -125,6 +126,16 @@ class Game {
     this.ball.display();
   }
 
+  checkForScore() {
+    if (this.ball.x <= 0) {
+      this.player1Score += 1;
+      this.changeState();
+    }
+    if (this.ball.x >= VIEW_WIDTH - this.ball.size) {
+      this.player2Score += 1;
+      this.changeState();
+    }
+  }
   changeState() {
     if (this.state === 'start') {
       this.state = 'play';
