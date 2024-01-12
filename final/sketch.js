@@ -8,6 +8,7 @@ const DEBUG_REFRESH_RATE = 500;
 let lastDebugMillis = 0;
 let debugInfo = [];
 let game;
+let bounceSound;
 
 class Paddle {
   constructor(x, y) {
@@ -109,11 +110,13 @@ class Game {
     if (this.state === 'play') {
       this.checkForScore();
       if (this.ball.collidesWithPaddle(this.player1)) {
+        bounceSound.play();
         this.ball.dx *= -1.03;
         this.ball.x = this.player1.x + this.ball.size;
         this.ball.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
       }
       if (this.ball.collidesWithPaddle(this.player2)) {
+        bounceSound.play();
         this.ball.dx *= -1.03;
         this.ball.x = this.player2.x - this.ball.size;
         this.ball.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
@@ -148,6 +151,7 @@ class Game {
 
 function preload() {
   gameFont = loadFont('font.ttf');
+  bounceSound = loadSound('bounce.wav');
 }
 
 function setup() {
