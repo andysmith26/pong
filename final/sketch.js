@@ -46,17 +46,6 @@ class Ball {
   }
 
   update() {
-    if (this.collidesWithPaddle(game.player1)) {
-      this.dx *= -1.03;
-      this.x = game.player1.x + this.size;
-      this.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
-    }
-    if (this.collidesWithPaddle(game.player2)) {
-      this.dx *= -1.03;
-      this.x = game.player2.x - this.size;
-      this.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
-    }
-    this.checkForWallCollision();
     this.x += this.dx / frameRate();
     this.y += this.dy / frameRate();
   }
@@ -118,6 +107,17 @@ class Game {
     this.player1.move(87, 83); // W and S keys
     this.player2.move(UP_ARROW, DOWN_ARROW);
     if (this.state === 'play') {
+      if (this.ball.collidesWithPaddle(this.player1)) {
+        this.ball.dx *= -1.03;
+        this.ball.x = this.player1.x + this.ball.size;
+        this.ball.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
+      }
+      if (this.ball.collidesWithPaddle(this.player2)) {
+        this.ball.dx *= -1.03;
+        this.ball.x = this.player2.x - this.ball.size;
+        this.ball.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
+      }
+      this.ball.checkForWallCollision();
       this.ball.update();
     }
     this.player1.display();
