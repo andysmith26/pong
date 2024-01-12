@@ -3,6 +3,7 @@ const VIEW_HEIGHT = 300;
 const PADDLE_SPEED = 200;
 const BALL_SPEED_X = 100;
 const BALL_SPEED_Y = 50;
+const BALL_BOUNCE_RANGE = 30;
 const DEBUG_REFRESH_RATE = 500;
 let lastDebugMillis = 0;
 let debugInfo = [];
@@ -33,10 +34,11 @@ class Paddle {
 
 class Ball {
   constructor() {
-    this.reset();
+    this.size = 8;
+    this.init();
   }
 
-  reset() {
+  init() {
     this.x = VIEW_WIDTH / 2 - 2;
     this.y = VIEW_HEIGHT / 2 - 2;
     this.dx = random([-BALL_SPEED_X, BALL_SPEED_X]);
@@ -44,13 +46,52 @@ class Ball {
   }
 
   update() {
+    if (this.collidesWithPaddle(game.player1)) {
+      this.dx *= -1.03;
+      this.x = game.player1.x + this.size;
+      this.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
+    }
+    if (this.collidesWithPaddle(game.player2)) {
+      this.dx *= -1.03;
+      this.x = game.player2.x - this.size;
+      this.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
+    }
+    this.checkForWallCollision();
     this.x += this.dx / frameRate();
     this.y += this.dy / frameRate();
   }
 
   display() {
     fill(255);
-    rect(this.x, this.y, 4, 4);
+    square(this.x, this.y, this.size);
+  }
+
+  collidesWithPaddle(paddle) {
+    if (
+      this.x <= paddle.x + paddle.width &&
+      this.x + this.size >= paddle.x &&
+      this.y <= paddle.y + paddle.height &&
+      this.y + this.size >= paddle.y
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // TODO: maybe align this functionality with paddle collision
+  //       in terms of where the update happens
+  checkForWallCollision() {
+    if (this.y <= 0) {
+      this.y = 0;
+      this.dy *= -1;
+      this.dx += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
+    }
+    if (this.y >= VIEW_HEIGHT - this.size) {
+      this.y = VIEW_HEIGHT - this.size;
+      this.dy *= -1;
+      this.dx += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
+    }
   }
 }
 
@@ -89,7 +130,7 @@ class Game {
       this.state = 'play';
     } else {
       this.state = 'start';
-      this.ball.reset();
+      this.ball.init();
     }
   }
 }
