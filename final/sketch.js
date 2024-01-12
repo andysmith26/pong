@@ -14,7 +14,7 @@ class Paddle {
     this.x = x;
     this.y = y;
     this.width = 5;
-    this.height = 20;
+    this.height = 30;
   }
 
   move(upKey, downKey) {
