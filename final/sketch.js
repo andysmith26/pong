@@ -1,11 +1,11 @@
 const VIEW_WIDTH = 500;
 const VIEW_HEIGHT = 300;
-const PADDLE_SPEED = 200;
+const PADDLE_SPEED = 300;
 const BALL_SPEED_X = 100;
-const BALL_SPEED_Y = 50;
+const BALL_SPEED_Y = 100;
 const BALL_BOUNCE_RANGE = 60;
 const DEBUG_REFRESH_RATE = 500;
-const WINNING_SCORE = 2;
+const WINNING_SCORE = 5;
 const SPEED_INCREASE_RATE = 0.08;
 let lastDebugMillis = 0;
 let debugInfo = [];
@@ -209,14 +209,37 @@ function draw() {
   if (game.state === 'start') {
     textFont(gameFont);
     textAlign(CENTER, CENTER);
-    textSize(12);
+    textSize(32);
     fill(255);
-    text('Hello Pong!', VIEW_WIDTH * 0.5, 20);
+    text('Hello Pong!', VIEW_WIDTH * 0.5, 30);
+    textSize(16);
+    text(
+      'Player 1 uses\nW and S keys',
+      VIEW_WIDTH * 0.25,
+      VIEW_HEIGHT * 0.35
+    );
+    text(
+      'Player 2 uses\nUP and DOWN arrows',
+      VIEW_WIDTH * 0.75,
+      VIEW_HEIGHT * 0.35
+    );
+    text(
+      'Score ' + WINNING_SCORE + ' to win',
+      VIEW_WIDTH * 0.5,
+      VIEW_HEIGHT * 0.6
+    );
+    text('Press ENTER to begin', VIEW_WIDTH * 0.5, VIEW_HEIGHT * 0.8);
   } else if (game.state === 'play') {
     game.updateAndDisplayElements();
     game.displayScore();
   } else if (game.state === 'paused') {
     game.displayScore();
+    textSize(16);
+    text(
+      'Press ENTER to continue',
+      VIEW_WIDTH * 0.5,
+      VIEW_HEIGHT * 0.7
+    );
   } else if (game.state === 'done') {
     ball = null;
     game.displayDoneScreen();
