@@ -3,9 +3,10 @@ const VIEW_HEIGHT = 300;
 const PADDLE_SPEED = 200;
 const BALL_SPEED_X = 100;
 const BALL_SPEED_Y = 50;
-const BALL_BOUNCE_RANGE = 30;
+const BALL_BOUNCE_RANGE = 60;
 const DEBUG_REFRESH_RATE = 500;
-const WINNING_SCORE = 1;
+const WINNING_SCORE = 2;
+const SPEED_INCREASE_RATE = 0.08;
 let lastDebugMillis = 0;
 let debugInfo = [];
 let game;
@@ -76,12 +77,10 @@ class Ball {
     if (this.y <= 0) {
       this.y = 0;
       this.dy *= -1;
-      this.dx += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
     }
     if (this.y >= VIEW_HEIGHT - this.size) {
       this.y = VIEW_HEIGHT - this.size;
       this.dy *= -1;
-      this.dx += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
     }
   }
 }
@@ -141,13 +140,13 @@ class Game {
       this.checkForScore();
       if (this.ball.collidesWithPaddle(this.player1)) {
         bounceSound.play();
-        this.ball.dx *= -1.03;
+        this.ball.dx *= -(1 + SPEED_INCREASE_RATE);
         this.ball.x = this.player1.x + this.ball.size;
         this.ball.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
       }
       if (this.ball.collidesWithPaddle(this.player2)) {
         bounceSound.play();
-        this.ball.dx *= -1.03;
+        this.ball.dx *= -(1 + SPEED_INCREASE_RATE);
         this.ball.x = this.player2.x - this.ball.size;
         this.ball.dy += random(-BALL_BOUNCE_RANGE, BALL_BOUNCE_RANGE);
       }
