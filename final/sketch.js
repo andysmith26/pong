@@ -5,6 +5,7 @@ const BALL_SPEED_X = 100;
 const BALL_SPEED_Y = 50;
 const BALL_BOUNCE_RANGE = 30;
 const DEBUG_REFRESH_RATE = 500;
+const WINNING_SCORE = 1;
 let lastDebugMillis = 0;
 let debugInfo = [];
 let game;
@@ -104,6 +105,35 @@ class Game {
     text(this.player2Score, VIEW_WIDTH / 2 + 50, VIEW_HEIGHT / 3);
   }
 
+  displayDoneScreen() {
+    this.displayScore();
+    textAlign(CENTER, CENTER);
+    textFont(gameFont);
+    textSize(32);
+    fill(255);
+    text(
+      'Player ' + this.getWinner() + ' wins!',
+      VIEW_WIDTH / 2,
+      VIEW_HEIGHT / 2 + 30
+    );
+    textSize(16);
+    text(
+      'Press ENTER to play again',
+      VIEW_WIDTH / 2,
+      VIEW_HEIGHT / 2 + 60
+    );
+  }
+
+  getWinner() {
+    if (this.state === 'done') {
+      if (this.player1Score > this.player2Score) {
+        return '1';
+      } else if (this.player2Score > this.player1Score) {
+        return '2';
+      }
+    }
+  }
+
   updateAndDisplayElements() {
     this.player1.move(87, 83); // W and S keys
     this.player2.move(UP_ARROW, DOWN_ARROW);
@@ -131,20 +161,34 @@ class Game {
 
   checkForScore() {
     if (this.ball.x <= 0) {
-      this.player1Score += 1;
-      this.changeState();
-    }
-    if (this.ball.x >= VIEW_WIDTH - this.ball.size) {
       this.player2Score += 1;
       this.changeState();
     }
+    if (this.ball.x >= VIEW_WIDTH - this.ball.size) {
+      this.player1Score += 1;
+      this.changeState();
+    }
+    if (
+      this.player1Score >= WINNING_SCORE ||
+      this.player2Score >= WINNING_SCORE
+    ) {
+      game.state = 'done';
+    }
   }
+
   changeState() {
     if (this.state === 'start') {
       this.state = 'play';
-    } else {
-      this.state = 'start';
       this.ball.init();
+    } else if (this.state === 'play') {
+      this.state = 'paused';
+    } else if (this.state === 'paused') {
+      this.state = 'play';
+      this.ball.init();
+    } else if (this.state === 'done') {
+      this.state = 'start';
+      this.player1Score = 0;
+      this.player2Score = 0;
     }
   }
 }
@@ -162,15 +206,21 @@ function setup() {
 function draw() {
   background(220);
   showViewport();
-  game.updateAndDisplayElements();
+
   if (game.state === 'start') {
     textFont(gameFont);
     textAlign(CENTER, CENTER);
     textSize(12);
     fill(255);
     text('Hello Pong!', VIEW_WIDTH * 0.5, 20);
-  } else {
+  } else if (game.state === 'play') {
+    game.updateAndDisplayElements();
     game.displayScore();
+  } else if (game.state === 'paused') {
+    game.displayScore();
+  } else if (game.state === 'done') {
+    ball = null;
+    game.displayDoneScreen();
   }
   showDebugInfo();
 }
